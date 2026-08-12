@@ -82,16 +82,24 @@ Following are the changes you need to make:
 
 ### Step 3: Configure caller authentication
 
-`GetSecret` requires a bearer token before the application acquires a managed identity token or calls Key Vault. Register an application in Microsoft Entra ID to represent this API, expose a scope, and configure its tenant ID and application ID URI in `ms-activedirectory-managedidentity/appsettings.json`:
+`GetSecret` requires an authenticated browser session before the application acquires a managed identity token or calls Key Vault. Register a Microsoft Entra ID web application, add the redirect URI `https://<your-host>/signin-oidc`, and configure its tenant ID and application (client) ID in `ms-activedirectory-managedidentity/appsettings.json`:
 
 ```json
 "AzureAd": {
-  "Authority": "https://login.microsoftonline.com/<tenant-id>/v2.0",
-  "Audience": "api://<application-client-id>"
+  "Instance": "https://login.microsoftonline.com/",
+  "TenantId": "<tenant-id>",
+  "ClientId": "<application-client-id>",
+  "CallbackPath": "/signin-oidc"
 }
 ```
 
-Call `GetSecret` with an access token issued by that tenant whose `aud` claim matches the configured audience. Requests without a valid bearer token receive `401 Unauthorized`.
+Store the application's client secret outside source control. For local development, set it with the Secret Manager:
+
+```Shell
+dotnet user-secrets set "AzureAd:ClientSecret" "<client-secret>" --project ms-activedirectory-managedidentity/ms-activedirectory-managedidentity.csproj
+```
+
+For Azure App Service, set an `AzureAd__ClientSecret` application setting instead. A browser request to `GetSecret` now redirects unauthenticated users to Microsoft Entra ID sign-in; after authentication, it returns to the requested page. `Index` remains public.
 
 > **Warning:** `userAssignedClientId`, `userAssignedResourceId`, and `userAssignedObjectId` are user-controlled query parameters in this sample, solely to demonstrate managed identity selection. Do not expose these as unrestricted caller input in production; select managed identities from trusted server-side configuration.
 
