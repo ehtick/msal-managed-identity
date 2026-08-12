@@ -25,7 +25,6 @@ namespace ms_activedirectory_managedidentity.Controllers
             _httpClientFactory = httpClientFactory;
         }
 
-        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();

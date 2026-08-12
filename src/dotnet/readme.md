@@ -82,7 +82,7 @@ Following are the changes you need to make:
 
 ### Step 3: Configure caller authentication
 
-`GetSecret` requires an authenticated browser session before the application acquires a managed identity token or calls Key Vault. Register a Microsoft Entra ID web application, add the redirect URI `https://<your-host>/signin-oidc`, and configure its tenant ID and application (client) ID in `ms-activedirectory-managedidentity/appsettings.json`:
+`GetSecret` requires an authenticated browser session before the application acquires a managed identity token or calls Key Vault. Register a Microsoft Entra ID web application, add the redirect URI `https://<your-host>/signin-oidc`, enable ID token issuance under **Implicit grant and hybrid flows**, and configure its tenant ID and application (client) ID in `ms-activedirectory-managedidentity/appsettings.json`:
 
 ```json
 "AzureAd": {
@@ -93,13 +93,7 @@ Following are the changes you need to make:
 }
 ```
 
-Store the application's client secret outside source control. For local development, set it with the Secret Manager:
-
-```Shell
-dotnet user-secrets set "AzureAd:ClientSecret" "<client-secret>" --project ms-activedirectory-managedidentity/ms-activedirectory-managedidentity.csproj
-```
-
-For Azure App Service, set an `AzureAd__ClientSecret` application setting instead. A browser request to `GetSecret` now redirects unauthenticated users to Microsoft Entra ID sign-in; after authentication, it returns to the requested page. `Index` remains public.
+This sign-in-only flow does not acquire access tokens for downstream APIs, so it does not require a client secret or certificate. Key Vault access uses the app's managed identity separately. A browser request to `GetSecret` redirects unauthenticated users to Microsoft Entra ID sign-in; after authentication, it returns to the requested page. `Index` remains public.
 
 > **Warning:** `userAssignedClientId`, `userAssignedResourceId`, and `userAssignedObjectId` are user-controlled query parameters in this sample, solely to demonstrate managed identity selection. Do not expose these as unrestricted caller input in production; select managed identities from trusted server-side configuration.
 
