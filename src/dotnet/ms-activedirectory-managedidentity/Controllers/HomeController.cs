@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using ms_activedirectory_managedidentity.Models;
 using System.Diagnostics;
 using System.Net.Http.Headers;
@@ -24,6 +26,7 @@ namespace ms_activedirectory_managedidentity.Controllers
             _httpClientFactory = httpClientFactory;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
@@ -38,6 +41,8 @@ namespace ms_activedirectory_managedidentity.Controllers
         /// using the resource id of the user assigned managed identity</param>
         /// <param name="userAssignedObjectId">Optional parameter if you want to get a token for a user assigned managed identity 
         /// using the object id of the user assigned managed identity</param>
+        // These query parameters are user-controlled for demonstration only. In production, use trusted server-side configuration.
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> GetSecret([FromQuery(Name = "userAssignedClientId")] string? userAssignedClientId = null,
             [FromQuery(Name = "userAssignedResourceId")] string? userAssignedResourceId = null,
             [FromQuery(Name = "userAssignedObjectId")] string? userAssignedObjectId = null)

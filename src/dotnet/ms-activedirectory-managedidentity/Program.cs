@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => builder.Configuration.GetSection("AzureAd").Bind(options));
+builder.Services.AddAuthorization();
 
 //Register an instance of type IHttpClientFactory
 //When you dispose of a HttpClient instance, the connection remains open for up to four minutes.
@@ -30,6 +35,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
