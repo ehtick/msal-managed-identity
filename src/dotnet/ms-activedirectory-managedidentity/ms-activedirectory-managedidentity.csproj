@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Identity.Client" Version="4.87.0" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="3.15.1" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.14.2" />
   </ItemGroup>
 
 </Project>
