@@ -82,7 +82,7 @@ Following are the changes you need to make:
 
 ### Step 3: Configure caller authentication
 
-`GetSecret` requires an authenticated browser session before the application acquires a managed identity token or calls Key Vault. Register a Microsoft Entra ID web application, add the redirect URI `https://<your-host>/signin-oidc`, enable ID token issuance under **Implicit grant and hybrid flows**, and configure its tenant ID and application (client) ID in `ms-activedirectory-managedidentity/appsettings.json`:
+`GetSecret` requires an authenticated browser session before the application acquires a managed identity token or calls Key Vault. Register a Microsoft Entra ID web application, add the redirect URI `https://<your-host>/signin-oidc`, enable ID token issuance and configure its tenant ID and application (client) ID in `ms-activedirectory-managedidentity/appsettings.json`:
 
 ```json
 "AzureAd": {
@@ -92,10 +92,6 @@ Following are the changes you need to make:
   "CallbackPath": "/signin-oidc"
 }
 ```
-
-This sign-in-only flow does not acquire access tokens for downstream APIs, so it does not require a client secret or certificate. Key Vault access uses the app's managed identity separately. A browser request to `GetSecret` redirects unauthenticated users to Microsoft Entra ID sign-in; after authentication, it returns to the requested page. `Index` remains public.
-
-> **Warning:** `userAssignedClientId`, `userAssignedResourceId`, and `userAssignedObjectId` are user-controlled query parameters in this sample, solely to demonstrate managed identity selection. Do not expose these as unrestricted caller input in production; select managed identities from trusted server-side configuration.
 
 ### Step 4:  Build and Publish the sample
 
