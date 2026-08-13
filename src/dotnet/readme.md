@@ -80,7 +80,20 @@ Following are the changes you need to make:
         var secretName = "<secret name>";
     ```
 
-### Step 3:  Build and Publish the sample
+### Step 3: Configure caller authentication
+
+`GetSecret` requires an authenticated browser session before the application acquires a managed identity token or calls Key Vault. Register a Microsoft Entra ID web application, add the redirect URI `https://<your-host>/signin-oidc`, and configure its tenant ID and application (client) ID in `ms-activedirectory-managedidentity/appsettings.json`:
+
+```json
+"AzureAd": {
+  "Instance": "https://login.microsoftonline.com/",
+  "TenantId": "<tenant-id>",
+  "ClientId": "<application-client-id>",
+  "CallbackPath": "/signin-oidc"
+}
+```
+
+### Step 4:  Build and Publish the sample
 
 Clean the solution, then re-build.
 
